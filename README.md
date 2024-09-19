@@ -11,14 +11,29 @@ pragma circom 2.0.0;
 /*This circuit template checks that c is the multiplication of a and b.*/  
 
 template Multiplier2 () {  
+   signal input inputA;
+   signal input inputB;
 
-   // Declaration of signals.  
-   signal input a;  
-   signal input b;  
-   signal output c;  
+   signal X;
+   signal Y;
 
-   // Constraints.  
-   c <== a * b;  
+   signal output outputQ;
+
+   component andgate=AND();
+   component orgate=OR();
+   component notgate=NOT();
+
+   andgate.a <== inputA ;
+   andgate.b <== inputB ;
+   X <== andgate.out ;
+
+   notgate.in <== inputB ;
+   Y <== notgate.out;
+
+   orgate.a <== X;
+   orgate.b <== Y;
+   outputQ <== orgate.out;
+
 }
 component main = Multiplier2();
 ```
@@ -30,7 +45,7 @@ component main = Multiplier2();
 This will generate the **out** file with circuit intermediaries and geneate the **MultiplierVerifier.sol** contract
 
 ### Prove and Deploy
-`npx hardhat run scripts/deploy.ts`
+`npx hardhat run scripts/deploy.ts --network amoy`
 This script does 4 things  
 1. Deploys the MultiplierVerifier.sol contract
 2. Generates a proof from circuit intermediaries with `generateProof()`
@@ -103,3 +118,13 @@ npx hardhat newcircuit --name newcircuit
 **determinism**
 > When you recompile the same circuit using the groth16 protocol, even with no changes, this plugin will apply a new final beacon, changing all the zkey output files. This also causes your Verifier contracts to be updated.
 > For development builds of groth16 circuits, we provide the --deterministic flag in order to use a NON-RANDOM and UNSECURE hardcoded entropy (0x000000 by default) which will allow you to more easily inspect and catch changes in your circuits. You can adjust this default beacon by setting the beacon property on a circuit's config in your hardhat.config.js file.
+
+## Authors
+
+Yashwanth BU
+
+[yashwanthbuu@gmail.com]
+
+## License
+
+This project is licensed under the [MIT] License
